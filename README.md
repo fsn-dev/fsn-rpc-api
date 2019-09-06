@@ -13,8 +13,10 @@ See the [JavaScript API](https://fusionapi.readthedocs.io/) for more.
 ## JSON-RPC Endpoint
 
 Online RPC service:
-testnet: https://testnet.fsn.dev/api
-mainnet: https://fsn.dev/api
+
+Testnet: https://testnet.fsn.dev/api
+
+Mainnet: https://fsn.dev/api
 
 Default JSON-RPC endpoints:
 
