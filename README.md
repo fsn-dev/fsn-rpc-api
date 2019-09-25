@@ -12,11 +12,17 @@ See the [JavaScript API](https://fusionapi.readthedocs.io/) for more.
 
 ## JSON-RPC Endpoint
 
+Online RPC service:
+
+Testnet: https://testnet.fsn.dev/api
+
+Mainnet: https://fsn.dev/api
+
 Default JSON-RPC endpoints:
 
 | Client | URL |
 |-------|:------------:|
-| Go |http://localhost:8545 | 
+| Go |http://localhost:32659 | 
 
 
 You can start the HTTP JSON-RPC with the `--rpc` flag
@@ -42,7 +48,7 @@ The JSON RPC can also be started from the efsn console using the `admin.startRPC
 
 The curl options below might return a response where the node complains about the content type, this is because the --data option sets the content type to application/x-www-form-urlencoded . If your node does complain, manually set the header by placing -H "Content-Type: application/json" at the start of the call.
 
-The examples also do not include the URL/IP & port combination which must be the last argument given to curl e.x. 127.0.0.1:8545
+The examples also do not include the URL/IP & port combination which must be the last argument given to curl e.x. 127.0.0.1:32659
 
 ## JSON-RPC methods
 
