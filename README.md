@@ -1586,7 +1586,7 @@ Returns all information about the address.
 2. `String|HexNumber|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
 
 ```js
-params: ["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"]
+params: ["0x3a1b3b81ed061581558a81f11d63e03129347437","latest"]
 ```
 ##### Return
 
