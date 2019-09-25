@@ -12,17 +12,11 @@ See the [JavaScript API](https://fusionapi.readthedocs.io/) for more.
 
 ## JSON-RPC Endpoint
 
-Online RPC service:
-
-Testnet: https://testnet.fsn.dev/api
-
-Mainnet: https://fsn.dev/api
-
 Default JSON-RPC endpoints:
 
 | Client | URL |
 |-------|:------------:|
-| Go |http://localhost:32659 | 
+| Go |http://localhost:8545 | 
 
 
 You can start the HTTP JSON-RPC with the `--rpc` flag
@@ -39,7 +33,7 @@ efsn --rpc --rpcaddr <ip> --rpcport <portnumber>
 If accessing the RPC from a browser, CORS will need to be enabled with the appropriate domain set. Otherwise, JavaScript calls are limit by the same-origin policy and requests will fail:
 
 ```bash
-efsn --rpc --rpccorsdomain "http://localhost:8111"
+efsn --rpc --rpccorsdomain "http://localhost:8545"
 ```
 
 The JSON RPC can also be started from the efsn console using the `admin.startRPC(addr, port)` command.
@@ -48,10 +42,12 @@ The JSON RPC can also be started from the efsn console using the `admin.startRPC
 
 The curl options below might return a response where the node complains about the content type, this is because the --data option sets the content type to application/x-www-form-urlencoded . If your node does complain, manually set the header by placing -H "Content-Type: application/json" at the start of the call.
 
-The examples also do not include the URL/IP & port combination which must be the last argument given to curl e.x. 127.0.0.1:32659
+The examples also do not include the URL/IP & port combination which must be the last argument given to curl e.x. 127.0.0.1:8545
 
 ## JSON-RPC methods
 
+* [fsn_ticketPrice](#fsn_ticketPrice)
+* [fsn_getStakeInfo](#fsn_getStakeInfo)
 * [fsntx_buyTicket](#fsntx_buyTicket)
 * [fsn_allTickets](#fsn_allTickets)
 * [fsn_allTicketsByAddress](#fsn_allTicketsByAddress)
@@ -73,13 +69,96 @@ The examples also do not include the URL/IP & port combination which must be the
 * [fsn_getAsset](#fsn_getAsset)
 * [fsn_getBalance](#fsn_getBalance)
 * [fsntx_makeSwap](#fsntx_makeSwap)
+* [fsn_getSwap](#fsn_getSwap)
 * [fsntx_takeSwap](#fsntx_takeSwap)
 * [fsntx_recallSwap](#fsntx_recallSwap)
+* [fsntx_makeMultiSwap](#fsntx_makeMultiSwap)
+* [fsn_getMultiSwap](#fsn_getMultiSwap)
+* [fsntx_takeMultiSwap](#fsntx_takeMultiSwap)
+* [fsntx_recallMultiSwap](#fsntx_recallMultiSwap)
 * [fsntx_isAutoBuyTicket](#fsntx_isAutoBuyTicket)
 * [fsntx_startAutoBuyTicket](#fsntx_startAutoBuyTicket)
 * [fsntx_stopAutoBuyTicket](#fsntx_stopAutoBuyTicket)
+* [fsn_getTransactionAndReceipt](#fsn_getTransactionAndReceipt)
+* [fsn_allInfoByAddress](#fsn_allInfoByAddress)
 
 ## JSON RPC API Reference
+
+***
+
+#### fsn_ticketPrice
+
+Return price of the ticket.
+
+##### Parameters
+
+`String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+
+```js
+params: [
+  "latest"  // state at the latest block
+]
+```
+
+##### Return
+
+`QUANTITY` - integer of the current ticket price in wei.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_ticketPrice","params":["latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "5000000000000000000000"
+}
+
+```
+
+***
+
+#### fsn_getStakeInfo
+
+Returns information about all miners.
+
+##### Parameters
+
+`String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+
+```js
+params: [
+  "latest"  // state at the latest block
+]
+```
+
+##### Return
+
+`DATA`  - all miners' address, total number of miners and tickets.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getStakeInfo","params":["latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "stakeInfo": {
+      "0x3a1b3b81ed061581558a81f11d63e03129347437": 2
+    },
+    "summary": {
+      "totalMiners": 1,
+      "totalTickets": 2
+    }
+  }
+}
+
+```
 
 ***
 
@@ -121,7 +200,7 @@ Return all tickets to all accounts.
 
 ##### Parameters
 
-`QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+`String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 ```js
 params: [
@@ -131,7 +210,7 @@ params: [
 
 ##### Return
 
-`JSON` - All tickets.
+`DATA` - All tickets.
 
 ##### Example
 ```js
@@ -172,7 +251,7 @@ Return all tickets of this address.
 ##### Parameters
 
 1. `DATA`, address - The address for the account.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+2. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 ```js
 params: [
@@ -183,7 +262,7 @@ params: [
 
 ##### Return
 
-`JSON` - All tickets of the address.
+`DATA` - All tickets of the address.
 
 ##### Example
 ```js
@@ -216,7 +295,7 @@ Return the total number of all addresses.
 
 ##### Parameters
 
-`QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+`String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 ```js
 params: [
@@ -249,8 +328,8 @@ Return the total number of tickets by address.
 
 ##### Parameters
 
-1. `DATA`, 20 Bytes - The address for the account.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+1. `String|Address`, 20 Bytes - The address for the account.
+2. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 ```js
 params: [
@@ -284,14 +363,14 @@ Convert assets to timelock balance.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the sending account.
+1. `String|Address`, from - The address for the sending account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, asset -  The hash of the asset.
-6. `String|Number`, to - The address for the receiving account.
-7. `Number|String|BN|BigNumber`, value -  The value for sending.
-8. `Number`, start - (optional) The start time of the time lock.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address`, to - The address for the receiving account.
+7. `String|BigNumber`, value -  The value for sending.
+8. `String|HexNumber`, start - (optional) The start time of the time lock.
 9. `Number`, end - (optional) The end time of the time lock.
 
 
@@ -332,15 +411,15 @@ Send a time locked asset to another account.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, asset -  The hash of the asset.
-6. `String|Number`, to -  The address for the receiving account.
-7. `Number|String|BN|BigNumber`, value -  The value for sending. 
-8. `Number`, start -  The start time of the time lock.
-9. `Number`, end - The end time of the time lock.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address`, to -  The address for the receiving account.
+7. `String|BigNumber`, value -  The value for sending. 
+8. `String|HexNumber`, start -  The start time of the time lock.
+9. `String|HexNumber`, end - The end time of the time lock.
 
 
 ```js
@@ -380,15 +459,15 @@ Convert timelock balance to asset.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, asset -  The hash of the asset.
-6. `String|Number`, to -  The address for the receiving account.
-7. `Number|String|BN|BigNumber`, value -  The value for sending. 
-8. `Number`, start - (optional) The start time of the time lock.
-9. `Number`, end - (optional) The end time of the time lock.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address`, to -  The address for the receiving account.
+7. `String|BigNumber`, value -  The value for sending. 
+8. `String|HexNumber`, start - (optional) The start time of the time lock.
+9. `String|HexNumber`, end - (optional) The end time of the time lock.
 
 ```js
 params: [{
@@ -427,9 +506,9 @@ Return time locked balance of assetID.
 
 ##### Parameters
 
-1. `String|Number`, assetID - The hash of the asset.
-2. `String|Number`, address - The address for the account.
-3. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+1. `String|Hash`, assetID - The hash of the asset.
+2. `String|Address`, address - The address for the account.
+3. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 
 ```js
@@ -442,7 +521,7 @@ params: [{
 
 ##### Return
 
-`JSON`, The detail of the TimeLock balance.
+`DATA`, The detail of the TimeLock balance.
 
 ##### Example
 ```js
@@ -474,7 +553,7 @@ Return all time lock balances.
 ##### Parameters
 
 1. `DATA`, 20 Bytes - The address for the account.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+2. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 ```js
 params: [{
@@ -485,7 +564,7 @@ params: [{
 
 ##### Return
 
-`JSON`, The detail of the TimeLock balance.
+`DATA`, The detail of the TimeLock balance.
 
 ##### Example
 ```js
@@ -520,14 +599,14 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 5. `String`, name - The name for the asset.
 6. `String`, symbol -  The symbol for the asset.
 7. `Number`, decimals -  The decimals for the asset.
-8. `Number|String|BN|BigNumber`, total -  The total value for the asset.
+8. `String|BigNumber`, total -  The total value for the asset.
 9. `bool`, canChange -  Values can be changed.  
 
 ```js
@@ -567,13 +646,13 @@ Reduction the total amount of asset.(Account has been unlocked && "canChange" is
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, asset - The hash of the asset.
-6. `String|Number`, to - The address for the receiving account.
-7. `Number|String|BN|BigNumber`, value - The value of decrease.
+5. `String|Hash`, asset - The hash of the asset.
+6. `String|Address`, to - The address for the receiving account.
+7. `String|BigNumber`, value - The value of decrease.
 8. `String`, transacData - (optional) The data for transaction.
 
 
@@ -612,13 +691,13 @@ Increase the total amount of asset.(Account has been unlocked && "canChange" is 
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, asset - The hash of the asset.
-6. `String|Number`, to - The address for the receiving account.
-7. `Number|String|BN|BigNumber`, value - The value of increase.
+5. `String|Hash`, asset - The hash of the asset.
+6. `String|Address`, to - The address for the receiving account.
+7. `String|BigNumber`, value - The value of increase.
 8. `String`, transacData - (optional) The data for transaction.
 
 
@@ -656,13 +735,13 @@ Send assets to other accounts.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the sending account.
+1. `String|Address`, from - The address for the sending account.
 2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, asset - The hash of the asset.
-6. `String|Number`, to - The address for the receiving account.
-7. `Number|String|BN|BigNumber`, value - The value for sending.
+5. `String|Hash`, asset - The hash of the asset.
+6. `String|Address`, to - The address for the receiving account.
+7. `String|BigNumber`, value - The value for sending.
 
 
 ```js
@@ -699,8 +778,8 @@ Get all assets balances of account.
 
 ##### Parameters
 
-1. `String|Number`, address - The address for the account.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+1. `String|Address`, address - The address for the account.
+2. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 
 ```js
@@ -736,9 +815,9 @@ Create a notation for a account.
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number` gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number` nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 
 
@@ -773,8 +852,8 @@ Get notation of account.
 
 ##### Parameters
 
-1. `DATA`, 20 Bytes - The address for the account.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+1. `String|Address` - The address for the account.
+2. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
 
 ```js
 params: [
@@ -785,7 +864,7 @@ params: [
 
 ##### Return
 
-`number` - the number of notation.
+`Number` - the number of notation.
 
 
 ##### Example
@@ -811,7 +890,7 @@ Return the address of the notation.
 ##### Parameters
 
 1. `Number`, notation - The number of the notation.
-2. `QUANTITY|TAG` - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
+2. `String|HexNumber|TAG` - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
 
 ```js
 params: [
@@ -846,8 +925,8 @@ Get the asset information.
 
 ##### Parameters
 
-1. `String|Number`, assetID - The hash of the asset.
-2. `QUANTITY|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
+1. `String|Hash`, assetID - The hash of the asset.
+2. `String|HexNumber|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
 
 
 ```js
@@ -859,7 +938,7 @@ params: [
 
 ##### Return
 
-`JSON` - the detail of the asset.
+`DATA` - the detail of the asset.
 
 
 ##### Example
@@ -894,8 +973,8 @@ Get the balance of account.
 ##### Parameters
 
 1. `String|Number`, assetID - The asset of the account.
-2. `String|Number`, address - The address of the account.
-3. `QUANTITY|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
+2. `String|Address`, address - The address of the account.
+3. `String|HexNumber|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
 
 
 ```js
@@ -933,27 +1012,27 @@ Create a quantum swap order.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, from- The address for the sending account.
-2. `Number`, gas- (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice- (optional) The price of gas for this transaction in wei.
-4. `Number`, nonce-(optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice- (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 5. `String|Number`, FromAssetID - The assetID of the from account.
-6. `Number`, FromStartTime - The start time of the sending account.
-7. `Number`, FromEndTime - The end time of the sending account.
-8. `Number|String|BN|BigNumber`, MinFromAmount - The amonut of the sending account.
+6. `String|HexNumber`, FromStartTime - (optional) The start time of the sending account.
+7. `String|HexNumber`, FromEndTime - (optional) The end time of the sending account.
+8. `String|BigNumber`, MinFromAmount - The amonut of the sending account.
 9. `String|Number`,  ToAssetID - The assetID of the to account.
-10. `Number`,  ToStartTime - The start time of the receiving account.
-11. `Number`, ToEndTime - The end time of the receiving account..
-12. `Number|String|BN|BigNumber`, MinToAmount - The amonut of the receiving account.
+10. `String|HexNumber`,  ToStartTime - (optional) The start time of the receiving account.
+11. `String|HexNumber`, ToEndTime - (optional) The end time of the receiving account..
+12. `String|BigNumber`, MinToAmount - The amonut of the receiving account.
 13. `Number`, SwapSize - The size of swap.
-14. `Array String|Number`, Targes - Only these addresses can be exchanged.
+14. `Array String|Address`, Targes - Only these addresses can be exchanged.
 
 
 ```js
 params: [
    {
     "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
-    "FromAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "FromAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", //If FromAssetID is "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe",it means make a Notation swap
     "ToAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "MinToAmount":"0x1BC16D674EC80000",    //2000000000000000000
     "MinFromAmount":"0x29A2241AF62C0000",  //3000000000000000000
@@ -985,6 +1064,61 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 
 ***
 
+#### fsn_getSwap
+
+Get the details of MakeSwap.
+
+
+##### Parameters
+
+1. `String|Hash` - the hash of the MakeSwap transaction.
+2. `String|HexNumber|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
+
+```js
+params: [
+  "0x2bd4929f673c53bd4ff90ee640f8d3ccd6b756977893009ca6ef5561e54af535",
+  "latest"
+]
+```
+
+##### Return
+
+`DATA` - the detail of the MakeSwap.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getSwap","params":["0x2bd4929f673c53bd4ff90ee640f8d3ccd6b756977893009ca6ef5561e54af535","latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "ID": "0xaac295a8b71c4698615d2ceb08e205355ad5f0bb622020fe1bac145e47a24141",
+    "Owner": "0x3a1b3b81ed061581558a81f11d63e03129347437",
+    "FromAssetID": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "FromStartTime": 1567418470,
+    "FromEndTime": 1570010553,
+    "MinFromAmount": 3e+18,
+    "ToAssetID": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "ToStartTime": 0,
+    "ToEndTime": 18446744073709552000,
+    "MinToAmount": 2e+18,
+    "SwapSize": 2,
+    "Targes": [
+      "0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113"
+    ],
+    "Time": 1569381182,
+    "Description": "",
+    "Notation": 0
+  }
+}
+```
+
+***
+
 #### fsntx_takeSwap
 
 Take the quantum swap order.(Account has been unlocked)
@@ -992,11 +1126,11 @@ Take the quantum swap order.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, The address for the sending account.
+1. `String|Address`, The address for the sending account.
 2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, SwapID - The hash of the swap.
+5. `String|Hash`, SwapID - The hash of the swap.
 6. `Number`, Size - The size of swap.
 
 
@@ -1016,7 +1150,7 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeSwap","params":[{"from":"0x07718f21f889b84451727ada8c65952a597b2e78","SwapID":"0x3be968fd7368b73d2cd8ccac12fedb0a9a3b85b8b86f10bdb69b4a8e3285dbab","Size":1}],"id":1}' http://10.192.33.196:8133
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeSwap","params":[{"from":"0x07718f21f889b84451727ada8c65952a597b2e78","SwapID":"0x3be968fd7368b73d2cd8ccac12fedb0a9a3b85b8b86f10bdb69b4a8e3285dbab","Size":1}],"id":1}' 
 
 // Result
 {
@@ -1028,18 +1162,17 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 
 ***
 
-
 #### fsntx_recallSwap
 
 Destroy Quantum swap order and Return Assets.(Account has been unlocked)
 
 ##### Parameters
 
-1. `String|Number`, from - The address for the account.
+1. `String|Address`, from - The address for the account.
 2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
-3. `Number|String|BN|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-5. `String|Number`, SwapID - The size of swap.
+5. `String|Hash`, SwapID - The hash of the swap.
 
 
 ```js
@@ -1068,13 +1201,235 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 ```
 
 ***
+#### fsntx_makeMultiSwap
+
+Create a multi swap order.(Account has been unlocked)
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Number`, FromAssetID - The assetID of the from account.
+6. `String|HexNumber`, FromStartTime - (optional) The start time of the sending account.
+7. `String|HexNumber`, FromEndTime - (optional) The end time of the sending account.
+8. `String|BigNumber`, MinFromAmount - The amonut of the sending account.
+9. `String|Number`,  ToAssetID - The assetID of the to account.
+10. `String|HexNumber`,  ToStartTime - (optional) The start time of the receiving account.
+11. `String|HexNumber`, ToEndTime - (optional) The end time of the receiving account..
+12. `String|BigNumber`, MinToAmount - The amonut of the receiving account.
+13. `Number`, SwapSize - The size of swap.
+14. `Array String|Address`, Targes - Only these addresses can be exchanged.
+
+
+```js
+params: [
+  {
+    "from":"0x3a1b3b81ed061581558a81f11d63e03129347437",
+    "FromAssetID":[
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],
+      "ToAssetID":[
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],
+      "MinToAmount":["0x1BC16D674EC80000","0x1BC16D674EC80000"],
+      "MinFromAmount":["0x29A2241AF62C0000","0x29A2241AF62C0000"],
+      "FromStartTime":["0x5D6CE866","0x5D6CE866"],
+      "FromEndTime":["0x5D9475B9","0x5D9475B9"],
+      "SwapSize":2,
+      "Targes":[]
+  }
+]
+```
+
+##### Return
+
+`DATA`, 32 Bytes - the transaction hash.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_makeMultiSwap","params":[{"from":"0x3a1b3b81ed061581558a81f11d63e03129347437","FromAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"ToAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"MinToAmount":["0x1BC16D674EC80000","0x1BC16D674EC80000"],"MinFromAmount":["0x29A2241AF62C0000","0x29A2241AF62C0000"],"FromStartTime":["0x5D6CE866","0x5D6CE866"],"FromEndTime":["0x5D9475B9","0x5D9475B9"],"SwapSize":2,"Targes":[]}],"id":1}' 
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":"0x89e699deac578e491675f1e4fe2233966e79fd388f9725035479268605801c87"
+}
+```
+
+***
+
+#### fsn_getMultiSwap
+
+Get the details of the multi MakeSwap.
+
+
+##### Parameters
+
+1. `String|Hash` - the hash of the Multi MakeSwap transaction.
+2. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+
+```js
+params: [
+  "0xf616d50440414ce2bfd2204ace993a34e53e58cc656c82b339be935670f2070e",
+  "latest"
+  ]
+```
+
+##### Return
+
+`DATA`, the detail of the multi MakeSwap.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getMultiSwap","params":["0xf616d50440414ce2bfd2204ace993a34e53e58cc656c82b339be935670f2070e","latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "ID": "0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47",
+    "Owner": "0x3a1b3b81ed061581558a81f11d63e03129347437",
+    "FromAssetID": [
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    ],
+    "FromStartTime": [
+      1567418470,
+      1567418470
+    ],
+    "FromEndTime": [
+      1570010553,
+      1570010553
+    ],
+    "MinFromAmount": [
+      3e+18,
+      3e+18
+    ],
+    "ToAssetID": [
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    ],
+    "ToStartTime": [
+      0,
+      0
+    ],
+    "ToEndTime": [
+      18446744073709552000,
+      18446744073709552000
+    ],
+    "MinToAmount": [
+      2e+18,
+      2e+18
+    ],
+    "SwapSize": 2,
+    "Targes": [],
+    "Time": 1569387880,
+    "Description": "",
+    "Notation": 0
+  }
+}
+```
+
+***
+
+#### fsntx_takeMultiSwap
+
+Take the multi swap order.(Account has been unlocked)
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, SwapID - The hash of the multi swap.
+6. `Number`, Size - The size of multi swap.
+
+
+```js
+params: [{
+  "from":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
+  "SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47",
+  "Size":1
+  }]
+```
+
+##### Return
+
+`DATA`, 32 Bytes - the transaction hash.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeMultiSwap","params":[{"from":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113","SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47","Size":1}],"id":1}' 
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":"0x75ebbd003ae590e1df879ebc931d34c6c494f9479b828017baecf60b44e2c59c"
+}
+```
+
+***
+
+#### fsn_recallMultiSwap
+
+Destroy multi swap order and Return Assets.(Account has been unlocked)
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Number`, SwapID - The hash of multi swap.
+
+
+```js
+params: [{
+  "from":"0x3a1b3b81ed061581558a81f11d63e03129347437",
+  "SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47"
+  }]
+```
+
+##### Return
+
+`DATA`, 32 Bytes - the transaction hash.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_recallMultiSwap","params":[{"from":"0x3a1b3b81ed061581558a81f11d63e03129347437","SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47"}],"id":1}' 
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":"0xe2dd257d22e2717f9591d207d18e493acb5aae5d19dc94a3f95ded7227f7c825"
+}
+```
+
+***
 #### fsntx_isAutoBuyTicket
 
 Return `true` if the ticket is purchased automatically.(Account has been unlocked)
 
 ##### Parameters
 
-`QUANTITY|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
+`String|HexNumber|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
 
 ```js
 params: ["latest"]
@@ -1150,6 +1505,145 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "result":null
 }
 
+```
+
+***
+#### fsn_getTransactionAndReceipt
+
+Return the tx and receipt of the transaction.
+
+##### Parameters
+
+`DATA`, 32 Bytes - the hash of the transaction.
+
+```js
+params: ["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"]
+```
+
+##### Return
+
+`DATA` - the tx and receipt of the transaction.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getTransactionAndReceipt","params":["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"],"id":1}'
+
+// Result
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tx": {
+      "blockHash": "0x3ee972b4ec6bc57f833cba7810f5d1420605763e93025b8c8706865208ea6ed0",
+      "blockNumber": "0xe7",
+      "from": "0x3a1b3b81ed061581558a81f11d63e03129347437",
+      "gas": "0x15f90",
+      "gasPrice": "0x3b9aca00",
+      "hash": "0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9",
+      "input": "0x",
+      "nonce": "0xe5",
+      "to": "0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
+      "transactionIndex": "0x1",
+      "value": "0xd3c21bcecceda1000000",
+      "v": "0x1b229",
+      "r": "0xa9e439221216f642a0a9d1da21ff3b3380622588bac3351921e6e28f0e89b2de",
+      "s": "0x5b3d37db3ce6bae9675fee3d46a01697247fc978e5abb7bbaacf9a3a91882be3"
+    },
+    "receipt": {
+      "blockHash": "0x3ee972b4ec6bc57f833cba7810f5d1420605763e93025b8c8706865208ea6ed0",
+      "blockNumber": "0xe7",
+      "contractAddress": null,
+      "cumulativeGasUsed": "0xa7c8",
+      "from": "0x3a1b3b81ed061581558a81f11d63e03129347437",
+      "gasUsed": "0x5208",
+      "logs": [],
+      "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "status": "0x1",
+      "to": "0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
+      "transactionHash": "0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9",
+      "transactionIndex": "0x1"
+    },
+    "receiptFound": true
+  }
+}
+```
+
+***
+#### fsn_allInfoByAddress
+
+Returns all information about the address.
+
+##### Parameters
+
+1. `String|Address`, 20 Bytes - the address to be queried.
+2. `String|HexNumber|TAG`, blockNr - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`.
+
+```js
+params: ["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"]
+```
+##### Return
+
+`DATA` - All information of the address.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_allInfoByAddress","params":["0x3a1b3b81ed061581558a81f11d63e03129347437","latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tickets": {
+      "0x8fd87180c90cc7133be48b83b03781810c8ae4ad86446870dbed6b1a9a3193a8": {
+        "Owner": "0x3a1b3b81ed061581558a81f11d63e03129347437",
+        "Height": 251,
+        "StartTime": 1569381648,
+        "ExpireTime": 1571973648,
+        "Value": 5e+21
+      },
+      "0xf9972189b9c077207cc05ab81d2e35bfe4ce6db28683d68c9ebfff6ff640722e": {
+        "Owner": "0x3a1b3b81ed061581558a81f11d63e03129347437",
+        "Height": 255,
+        "StartTime": 1569381700,
+        "ExpireTime": 1571973700,
+        "Value": 5e+21
+      }
+    },
+    "balances": {
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff": "98980637500000000000000000"
+    },
+    "timeLockBalances": {
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff": {
+        "Items": [
+          {
+            "StartTime": 1569381700,
+            "EndTime": 18446744073709552000,
+            "Value": "9994000000000000000000"
+          },
+          {
+            "StartTime": 1571973649,
+            "EndTime": 18446744073709552000,
+            "Value": "5000000000000000000000"
+          },
+          {
+            "StartTime": 1571973701,
+            "EndTime": 18446744073709552000,
+            "Value": "5000000000000000000000"
+          },
+          {
+            "StartTime": 1570010554,
+            "EndTime": 18446744073709552000,
+            "Value": "6000000000000000000"
+          }
+        ]
+      }
+    },
+    "notation": 0
+  }
+}
 ```
 
 ***
