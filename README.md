@@ -22,7 +22,7 @@ Default JSON-RPC endpoints:
 
 | Client | URL |
 |-------|:------------:|
-| Go |http://localhost:32659 | 
+| Go |http://localhost:32659 |
 
 
 You can start the HTTP JSON-RPC with the `--rpc` flag
@@ -54,6 +54,7 @@ The examples also do not include the URL/IP & port combination which must be the
 
 * [fsn_ticketPrice](#fsn_ticketPrice)
 * [fsn_getStakeInfo](#fsn_getStakeInfo)
+* [fsn_getBlockReward](#fsn_getBlockReward)
 * [fsntx_buyTicket](#fsntx_buyTicket)
 * [fsn_allTickets](#fsn_allTickets)
 * [fsn_allTicketsByAddress](#fsn_allTicketsByAddress)
@@ -69,6 +70,7 @@ The examples also do not include the URL/IP & port combination which must be the
 * [fsntx_incAsset](#fsntx_incAsset)
 * [fsntx_sendAsset](#fsntx_sendAsset)
 * [fsn_getAllBalances](#fsn_getAllBalances)
+* [fsn_getLatestNotation](#fsn_getLatestNotation)
 * [fsntx_genNotation](#fsntx_genNotation)
 * [fsn_getNotation](#fsn_getNotation)
 * [fsn_getAddressByNotation](#fsn_getAddressByNotation)
@@ -83,8 +85,8 @@ The examples also do not include the URL/IP & port combination which must be the
 * [fsntx_takeMultiSwap](#fsntx_takeMultiSwap)
 * [fsntx_recallMultiSwap](#fsntx_recallMultiSwap)
 * [fsntx_isAutoBuyTicket](#fsntx_isAutoBuyTicket)
-* [fsntx_startAutoBuyTicket](#fsntx_startAutoBuyTicket)
-* [fsntx_stopAutoBuyTicket](#fsntx_stopAutoBuyTicket)
+* [miner_startAutoBuyTicket](#miner_startAutoBuyTicket)
+* [miner_stopAutoBuyTicket](#miner_stopAutoBuyTicket)
 * [fsn_getTransactionAndReceipt](#fsn_getTransactionAndReceipt)
 * [fsn_allInfoByAddress](#fsn_allInfoByAddress)
 
@@ -165,7 +167,37 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 }
 
 ```
+#### fsn_getBlockReward 
 
+Returns block rewards.
+
+##### Parameters
+
+`String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+
+```js
+params: [
+  "latest"  // state at the latest block
+]
+```
+
+##### Return
+
+`DATA`  - the rewards of the block.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getBlockReward","params":["latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":"2500021952000000000"
+}
+
+```
 ***
 
 #### fsntx_buyTicket
@@ -374,17 +406,25 @@ Convert assets to timelock balance.(Account has been unlocked)
 3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 5. `String|Hash`, asset -  The hash of the asset.
-6. `String|Address`, to - The address for the receiving account.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
 7. `String|BigNumber`, value -  The value for sending.
 8. `String|HexNumber`, start - (optional) The start time of the time lock.
 9. `Number`, end - (optional) The end time of the time lock.
 
 
 ```js
-params: [{
+1.params: [{
   "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
   "to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "start":"0x5D6CD2FC", //2019/9/2 16:29:48
+  "end":"0x5D945FFC", //2019/10/2 16:29:48
+  "value":"0x1BC16D674EC80000" //2,000,000,000,000,000,000
+}]
+2.params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "toUSAN":104,
   "start":"0x5D6CD2FC", //2019/9/2 16:29:48
   "end":"0x5D945FFC", //2019/10/2 16:29:48
   "value":"0x1BC16D674EC80000" //2,000,000,000,000,000,000
@@ -398,8 +438,9 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_assetToTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
+1.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_assetToTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
 
+2.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_assetToTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":104,"start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
 // Result
 {
   "jsonrpc":"2.0",
@@ -422,17 +463,26 @@ Send a time locked asset to another account.(Account has been unlocked)
 3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 5. `String|Hash`, asset -  The hash of the asset.
-6. `String|Address`, to -  The address for the receiving account.
-7. `String|BigNumber`, value -  The value for sending. 
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value -  The value for sending.
 8. `String|HexNumber`, start -  The start time of the time lock.
 9. `String|HexNumber`, end - The end time of the time lock.
 
 
 ```js
-params: [{
+1. params: [{
   "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
   "to":"0x07718f21f889b84451727ada8c65952a597b2e78",
+  "start":"0x5D6CD2FC",  //2019/9/2 16:29:48
+  "end":"0x5D945FFC",   //2019/10/2 16:29:48
+  "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
+  }]
+
+2. params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "toUSAN":104,
   "start":"0x5D6CD2FC",  //2019/9/2 16:29:48
   "end":"0x5D945FFC",   //2019/10/2 16:29:48
   "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
@@ -446,7 +496,9 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_timeLockToTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x07718f21f889b84451727ada8c65952a597b2e78","start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
+1. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_timeLockToTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x07718f21f889b84451727ada8c65952a597b2e78","start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
+
+2. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_timeLockToTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":104,"start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
 
 // Result
 {
@@ -470,16 +522,25 @@ Convert timelock balance to asset.(Account has been unlocked)
 3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 5. `String|Hash`, asset -  The hash of the asset.
-6. `String|Address`, to -  The address for the receiving account.
-7. `String|BigNumber`, value -  The value for sending. 
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value -  The value for sending.
 8. `String|HexNumber`, start - (optional) The start time of the time lock.
 9. `String|HexNumber`, end - (optional) The end time of the time lock.
 
 ```js
-params: [{
+1. params: [{
   "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
   "to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "start":"0x5D6CD2FC",  //2019/9/2 16:29:48
+  "end":"0x5D945FFC",   //2019/10/2 16:29:48
+  "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
+  }]
+
+2. params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "toUSAN":104,
   "start":"0x5D6CD2FC",  //2019/9/2 16:29:48
   "end":"0x5D945FFC",   //2019/10/2 16:29:48
   "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
@@ -493,7 +554,9 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_timeLockToAsset","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
+1.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_timeLockToAsset","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
+
+2.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_timeLockToAsset","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":104,"start":"0x5D6CD2FC","end":"0x5D945FFC","value":"0x1BC16D674EC80000"}],"id":1}'
 
 // Result
 {
@@ -746,17 +809,24 @@ Send assets to other accounts.(Account has been unlocked)
 3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
 4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
 5. `String|Hash`, asset - The hash of the asset.
-6. `String|Address`, to - The address for the receiving account.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
 7. `String|BigNumber`, value - The value for sending.
 
 
 ```js
-params: [{
+1. params: [{
   "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
   "to":"0x07718f21f889b84451727ada8c65952a597b2e78",
   "value":"0x10",
   "asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"
   }]
+2. params:[{
+  "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "toUSAN":"207",
+  "value":"0x10",
+  "asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"
+}]
+
 ```
 
 ##### Return
@@ -766,7 +836,8 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendAsset","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x07718f21f889b84451727ada8c65952a597b2e78","value":"0x10","asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"}],"id":1}'
+1. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendAsset","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x07718f21f889b84451727ada8c65952a597b2e78","value":"0x10","asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"}],"id":1}'
+2. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendAsset","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":"207","value":"0x10","asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"}],"id":1}'
 
 // Result
 {
@@ -814,9 +885,45 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 
 ***
 
+#### fsn_getLatestNotation
+
+Get the last Notation in the blockchain.
+
+
+##### Parameters
+
+1. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+
+
+```js
+params: [
+  "latest"  // state at the latest block
+]
+```
+
+##### Return
+
+`DATA` - the latest notation of the blockNumber.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getLatestNotation","params":["latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":104
+}
+```
+
+***
+
 #### fsntx_genNotation
 
-Create a notation for a account.
+Create a notation for a account. (Account has been unlocked)
 
 
 ##### Parameters
@@ -1058,7 +1165,7 @@ params: [
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_makeSwap","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","FromAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","ToAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","MinToAmount":"0x1BC16D674EC80000","MinFromAmount":"0x29A2241AF62C0000","FromStartTime":"0x5D6CE866","FromEndTime":"0x5D9475B9","SwapSize":2,"Targes":["0x07718f21f889b84451727ada8c65952a597b2e78"]}],"id":1}' 
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_makeSwap","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","FromAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","ToAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","MinToAmount":"0x1BC16D674EC80000","MinFromAmount":"0x29A2241AF62C0000","FromStartTime":"0x5D6CE866","FromEndTime":"0x5D9475B9","SwapSize":2,"Targes":["0x07718f21f889b84451727ada8c65952a597b2e78"]}],"id":1}'
 
 // Result
 {
@@ -1156,7 +1263,7 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeSwap","params":[{"from":"0x07718f21f889b84451727ada8c65952a597b2e78","SwapID":"0x3be968fd7368b73d2cd8ccac12fedb0a9a3b85b8b86f10bdb69b4a8e3285dbab","Size":1}],"id":1}' 
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeSwap","params":[{"from":"0x07718f21f889b84451727ada8c65952a597b2e78","SwapID":"0x3be968fd7368b73d2cd8ccac12fedb0a9a3b85b8b86f10bdb69b4a8e3285dbab","Size":1}],"id":1}'
 
 // Result
 {
@@ -1196,7 +1303,7 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_recallSwap","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","SwapID":"0x3be968fd7368b73d2cd8ccac12fedb0a9a3b85b8b86f10bdb69b4a8e3285dbab"}],"id":1}' 
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_recallSwap","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","SwapID":"0x3be968fd7368b73d2cd8ccac12fedb0a9a3b85b8b86f10bdb69b4a8e3285dbab"}],"id":1}'
 
 // Result
 {
@@ -1258,7 +1365,7 @@ params: [
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_makeMultiSwap","params":[{"from":"0x3a1b3b81ed061581558a81f11d63e03129347437","FromAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"ToAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"MinToAmount":["0x1BC16D674EC80000","0x1BC16D674EC80000"],"MinFromAmount":["0x29A2241AF62C0000","0x29A2241AF62C0000"],"FromStartTime":["0x5D6CE866","0x5D6CE866"],"FromEndTime":["0x5D9475B9","0x5D9475B9"],"SwapSize":2,"Targes":[]}],"id":1}' 
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_makeMultiSwap","params":[{"from":"0x3a1b3b81ed061581558a81f11d63e03129347437","FromAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"ToAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"MinToAmount":["0x1BC16D674EC80000","0x1BC16D674EC80000"],"MinFromAmount":["0x29A2241AF62C0000","0x29A2241AF62C0000"],"FromStartTime":["0x5D6CE866","0x5D6CE866"],"FromEndTime":["0x5D9475B9","0x5D9475B9"],"SwapSize":2,"Targes":[]}],"id":1}'
 
 // Result
 {
@@ -1378,7 +1485,7 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeMultiSwap","params":[{"from":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113","SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47","Size":1}],"id":1}' 
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_takeMultiSwap","params":[{"from":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113","SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47","Size":1}],"id":1}'
 
 // Result
 {
@@ -1418,7 +1525,7 @@ params: [{
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_recallMultiSwap","params":[{"from":"0x3a1b3b81ed061581558a81f11d63e03129347437","SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47"}],"id":1}' 
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_recallMultiSwap","params":[{"from":"0x3a1b3b81ed061581558a81f11d63e03129347437","SwapID":"0xac05ff3d0d7ad5440eba0ee751ba19f876105b790dec63051c4db0b434cefa47"}],"id":1}'
 
 // Result
 {
@@ -1460,7 +1567,7 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 ```
 
 ***
-#### fsntx_startAutoBuyTicket
+#### miner_startAutoBuyTicket
 
 Start buying tickets automatically.(Account has been unlocked)
 
@@ -1475,7 +1582,7 @@ none
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_startAutoBuyTicket","params":[],"id":1}'
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"miner_startAutoBuyTicket","params":[],"id":1}'
 
 // Result
 {
@@ -1487,7 +1594,7 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 ```
 
 ***
-#### fsntx_stopAutoBuyTicket
+#### miner_stopAutoBuyTicket
 
 Stop buying tickets automatically.(Account has been unlocked)
 
@@ -1502,7 +1609,7 @@ none
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_stopAutoBuyTicket","params":[],"id":1}'
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"miner_stopAutoBuyTicket","params":[],"id":1}'
 
 // Result
 {
@@ -1533,46 +1640,47 @@ params: ["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"]
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getTransactionAndReceipt","params":["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"],"id":1}'
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getTransactionAndReceipt","params":["0x1352d339cb10f7b40c1560cef938635a81caf194be8e2afc0f3ee2a75997b30a"],"id":1}'
 
 // Result
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "tx": {
-      "blockHash": "0x3ee972b4ec6bc57f833cba7810f5d1420605763e93025b8c8706865208ea6ed0",
-      "blockNumber": "0xe7",
-      "from": "0x3a1b3b81ed061581558a81f11d63e03129347437",
-      "gas": "0x15f90",
-      "gasPrice": "0x3b9aca00",
-      "hash": "0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9",
-      "input": "0x",
-      "nonce": "0xe5",
-      "to": "0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
-      "transactionIndex": "0x1",
-      "value": "0xd3c21bcecceda1000000",
-      "v": "0x1b229",
-      "r": "0xa9e439221216f642a0a9d1da21ff3b3380622588bac3351921e6e28f0e89b2de",
-      "s": "0x5b3d37db3ce6bae9675fee3d46a01697247fc978e5abb7bbaacf9a3a91882be3"
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "tx":{
+      "blockHash":"0x43ef72bb071e4f48be3baeb1bb08004c7eb12a5484f45199f6c7e7f899cb63d2",
+      "blockNumber":"0xc0",
+      "from":"0x3a1b3b81ed061581558a81f11d63e03129347437",
+      "gas":"0x15f90",
+      "gasPrice":"0x3b9aca00",
+      "hash":"0x1352d339cb10f7b40c1560cef938635a81caf194be8e2afc0f3ee2a75997b30a",
+      "input":"0x",
+      "nonce":"0x8e",
+      "to":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
+      "transactionIndex":"0x1",
+      "value":"0xde0b6b3a7640000",
+      "v":"0x1b22a",
+      "r":"0x4f88d054a9bf6024c9f8b1105c8cea824169f232d9b616731fac8bd3e4f81fdc",
+      "s":"0x423052f8b922c8fe26364526e98b3ceccab48f6a39fd79ffb9ad7f66e62c95bd"
     },
-    "receipt": {
-      "blockHash": "0x3ee972b4ec6bc57f833cba7810f5d1420605763e93025b8c8706865208ea6ed0",
-      "blockNumber": "0xe7",
-      "contractAddress": null,
-      "cumulativeGasUsed": "0xa7c8",
-      "from": "0x3a1b3b81ed061581558a81f11d63e03129347437",
-      "gasUsed": "0x5208",
-      "logs": [],
-      "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-      "status": "0x1",
-      "to": "0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
-      "transactionHash": "0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9",
-      "transactionIndex": "0x1"
+    "receipt":{
+      "blockHash":"0x43ef72bb071e4f48be3baeb1bb08004c7eb12a5484f45199f6c7e7f899cb63d2",
+      "blockNumber":"0xc0",
+      "contractAddress":null,
+      "cumulativeGasUsed":"0xa7c8",
+      "from":"0x3a1b3b81ed061581558a81f11d63e03129347437",
+      "gasUsed":"0x5208",
+      "logs":[],
+      "logsBloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "status":"0x1",
+      "to":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
+      "transactionHash":"0x1352d339cb10f7b40c1560cef938635a81caf194be8e2afc0f3ee2a75997b30a",
+      "transactionIndex":"0x1"
     },
-    "receiptFound": true
+    "receiptFound":true
   }
 }
+
 ```
 
 ***
