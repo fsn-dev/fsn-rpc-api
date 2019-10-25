@@ -44,15 +44,18 @@ FSN节点代码fork于[go-ethereum](https://github.com/ethereum/go-ethereum)，R
 
 ### 充值识别
 
-FSN网络支持两种转账交易类型：
+FSN网络支持两种转账交易类型，这两种交易类型都可以充值：
 
 - 默认采用[sendAsset](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API#fsntx_sendAsset)
 
 - 兼容eth的[sendtransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
 
-这两种交易类型都可以充值。
 
-对于转账至充值地址的交易,可以通过监控最新区块[getblockbynumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)，获取块里的所有交易列表，然后遍历交易列表确认是否to地址为充值地址[getTransactionByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)，一致则为充值交易。
+对于转账至充值地址的交易,可以通过监控最新区块来识别。获取区块里的所有交易列表，然后遍历交易列表识别to地址是否为充值地址，一致则为充值交易。
+
+兼容eth的sendtransaction转账交易可以采用和以太坊充值一样的充值识别代码。
+
+默认采用sendAsset的转账交易需要增加一段代码来识别充值。区别在于此类交易的真实to地址和转账金额需要从交易的receipt的data参数中解析后获取。
 
 充值入账块确认数量建议大于30个。
 
