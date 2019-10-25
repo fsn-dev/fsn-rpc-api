@@ -40,7 +40,7 @@ FSN节点支持两种部署方法：
 
 作为同步节点能够查询所有历史数据需要打开`--gcmode=archive`参数，在770000块高度时占用硬盘空间超过100G，采用此模式需要提前准备服务器存储空间（建议>300G）。非archive模式1G左右，但无法查询一些历史数据。
 
-## 接口开发
+## FSN钱包对接
 
 FSN节点代码fork于[go-ethereum](https://github.com/ethereum/go-ethereum)，RPC接口与ETH兼容，上层应用接口与[web3.js](https://github.com/ethereum/web3.js)兼容。FSN的Ticket, Asset, Timelock, USAN, Swap, Staking等功能提供[RPC扩展接口](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API)和[web3扩展接口](https://github.com/FUSIONFoundation/web3-fusion-extend)。
 
