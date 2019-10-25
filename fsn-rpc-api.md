@@ -1634,7 +1634,7 @@ Return the tx and receipt of the transaction.
 `DATA`, 32 Bytes - the hash of the transaction.
 
 ```js
-params: ["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"]
+params: ["0x8700056ef2896b47760e661902b21d8f294a80bff87c7e4108d7bbd5bce4ce6d"]
 ```
 
 ##### Return
@@ -1644,47 +1644,74 @@ params: ["0x425f7e5a806cfb2c6da487e2186becf88e07bb1e7582b25e64870d96959586e9"]
 ##### Example
 ```js
 // Request
-curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getTransactionAndReceipt","params":["0x1352d339cb10f7b40c1560cef938635a81caf194be8e2afc0f3ee2a75997b30a"],"id":1}'
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getTransactionAndReceipt","params":["0x8700056ef2896b47760e661902b21d8f294a80bff87c7e4108d7bbd5bce4ce6d"],"id":1}'
 
 // Result
 {
-  "jsonrpc":"2.0",
-  "id":1,
-  "result":{
-    "tx":{
-      "blockHash":"0x43ef72bb071e4f48be3baeb1bb08004c7eb12a5484f45199f6c7e7f899cb63d2",
-      "blockNumber":"0xc0",
-      "from":"0x3a1b3b81ed061581558a81f11d63e03129347437",
-      "gas":"0x15f90",
-      "gasPrice":"0x3b9aca00",
-      "hash":"0x1352d339cb10f7b40c1560cef938635a81caf194be8e2afc0f3ee2a75997b30a",
-      "input":"0x",
-      "nonce":"0x8e",
-      "to":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
-      "transactionIndex":"0x1",
-      "value":"0xde0b6b3a7640000",
-      "v":"0x1b22a",
-      "r":"0x4f88d054a9bf6024c9f8b1105c8cea824169f232d9b616731fac8bd3e4f81fdc",
-      "s":"0x423052f8b922c8fe26364526e98b3ceccab48f6a39fd79ffb9ad7f66e62c95bd"
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "fsnTxInput": {
+      "FuncType": "SendAssetFunc",
+      "FuncParam": {
+        "AssetID": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "To": "0x37a200388caa75edcc53a2bd329f7e9563c6acb6",
+        "Value": 1e+18
+      }
     },
-    "receipt":{
-      "blockHash":"0x43ef72bb071e4f48be3baeb1bb08004c7eb12a5484f45199f6c7e7f899cb63d2",
-      "blockNumber":"0xc0",
-      "contractAddress":null,
-      "cumulativeGasUsed":"0xa7c8",
-      "from":"0x3a1b3b81ed061581558a81f11d63e03129347437",
-      "gasUsed":"0x5208",
-      "logs":[],
-      "logsBloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-      "status":"0x1",
-      "to":"0xb49edfcd6ab3dac4cc908f31fc4b3f7772773113",
-      "transactionHash":"0x1352d339cb10f7b40c1560cef938635a81caf194be8e2afc0f3ee2a75997b30a",
-      "transactionIndex":"0x1"
+    "tx": {
+      "blockHash": "0xd8d4b5f054cb398b1f0b5bb5d4add5e80d10a432f2c15226f620609577536b6b",
+      "blockNumber": "0xad1a5",
+      "from": "0x0122bf3930c1201a21133937ad5c83eb4ded1b08",
+      "gas": "0x15f90",
+      "gasPrice": "0x3b9aca00",
+      "hash": "0x8700056ef2896b47760e661902b21d8f294a80bff87c7e4108d7bbd5bce4ce6d",
+      "input": "0xf84402b841f83fa0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9437a200388caa75edcc53a2bd329f7e9563c6acb6880de0b6b3a7640000",
+      "nonce": "0xa7cc",
+      "to": "0xffffffffffffffffffffffffffffffffffffffff",
+      "transactionIndex": "0x2",
+      "value": "0x0",
+      "v": "0x16ce3",
+      "r": "0x8244e44f720023b240faafab08bb401b1b3167087f2882fa6b8f4fc87b59bdfc",
+      "s": "0x277635df431668f4a8b8c8b0702077634dd404db9a1139539d3c276651d3d1ce"
     },
-    "receiptFound":true
+    "receipt": {
+      "blockHash": "0xd8d4b5f054cb398b1f0b5bb5d4add5e80d10a432f2c15226f620609577536b6b",
+      "blockNumber": "0xad1a5",
+      "contractAddress": null,
+      "cumulativeGasUsed": "0x10f60",
+      "from": "0x0122bf3930c1201a21133937ad5c83eb4ded1b08",
+      "fsnLogData": {
+        "AssetID": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "To": "0x37a200388caa75edcc53a2bd329f7e9563c6acb6",
+        "Value": 1e+18
+      },
+      "fsnLogTopic": "SendAssetFunc",
+      "gasUsed": "0x63e0",
+      "logs": [
+        {
+          "address": "0xffffffffffffffffffffffffffffffffffffffff",
+          "topics": [
+            "0x0000000000000000000000000000000000000000000000000000000000000002"
+          ],
+          "data": "0x7b2241737365744944223a22307866666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666222c22546f223a22307833376132303033383863616137356564636335336132626433323966376539353633633661636236222c2256616c7565223a313030303030303030303030303030303030307d",
+          "blockNumber": "0xad1a5",
+          "transactionHash": "0x8700056ef2896b47760e661902b21d8f294a80bff87c7e4108d7bbd5bce4ce6d",
+          "transactionIndex": "0x2",
+          "blockHash": "0xd8d4b5f054cb398b1f0b5bb5d4add5e80d10a432f2c15226f620609577536b6b",
+          "logIndex": "0x2",
+          "removed": false
+        }
+      ],
+      "logsBloom": "0x04000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000002000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000008000000000000000000000",
+      "status": "0x1",
+      "to": "0xffffffffffffffffffffffffffffffffffffffff",
+      "transactionHash": "0x8700056ef2896b47760e661902b21d8f294a80bff87c7e4108d7bbd5bce4ce6d",
+      "transactionIndex": "0x2"
+    },
+    "receiptFound": true
   }
 }
-
 ```
 
 ***
