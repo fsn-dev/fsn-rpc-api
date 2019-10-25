@@ -55,7 +55,16 @@ FSN网络支持两种转账交易类型，这两种交易类型都可以充值�
 
 兼容eth的sendtransaction转账交易可以采用和以太坊一样的充值识别代码。一般是通过监控最新区块，获取区块里的所有交易列表，然后遍历交易列表识别to地址是否为充值地址，是则为充值交易。
 
-默认采用的sendAsset转账交易类似erc20智能合约转账交易，需要增加一段代码来识别充值。区别在于此类交易的实际to地址和转账金额需要从交易的receipt的data参数中解析后获取。解析接口采用[getTransactionAndReceipt](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API#fsn_getTransactionAndReceipt)接口，其中交易类型通过此参数识别`"fsnLogTopic": "SendAssetFunc"`，实际to地址和转账金额Value通过此参数识别`fsnLogData`。
+默认采用的sendAsset转账交易类似erc20智能合约转账交易，需要增加一段代码来识别充值。区别在于此类交易的实际to地址和转账金额需要从交易的receipt的data参数中解析后获取。解析接口采用[getTransactionAndReceipt](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API#fsn_getTransactionAndReceipt)，其中交易类型通过此参数识别`"fsnLogTopic": "SendAssetFunc"`，实际to地址和转账金额Value通过此参数识别
+
+```
+"fsnLogData": {
+        "AssetID": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "To": "0x37a200388caa75edcc53a2bd329f7e9563c6acb6",
+        "Value": 1e+18
+      }
+
+```
 
 充值入账的块确认数量建议大于30个。
 
