@@ -1,5 +1,9 @@
 # FUSION JSON RPC API
 
+FUSION RPC is compatible with Ethereum's [JSON-RPC](https://github.com/ethereum/wiki/wiki/JSON-RPC) and [web3.js](https://github.com/ethereum/web3.js) API. In addition, FUSION's extended API include: Ticket, Asset, Timelock, USAN, Swap, Staking, etc.
+
+## JSON RPC
+
 [JSON](http://json.org/) is a lightweight data-interchange format. It can represent numbers, strings, ordered sequences of values, and collections of name/value pairs.
 
 [JSON-RPC](http://www.jsonrpc.org/specification) is a stateless, light-weight remote procedure call (RPC) protocol. Primarily this specification defines several data structures and the rules around their processing. It is transport agnostic in that the concepts can be used within the same process, over sockets, over HTTP, or in many various message passing environments. It uses JSON ([RFC 4627](http://www.ietf.org/rfc/rfc4627.txt)) as data format.
@@ -7,8 +11,8 @@
 
 ## JavaScript API
 
-To talk to an ethereum node from inside a JavaScript application use the [web3.js](https://github.com/ethereum/web3.js) library, which gives a convenient interface for the RPC methods.
-See the [JavaScript API](https://fusionapi.readthedocs.io/) for more.
+To talk to an fusion node from inside a JavaScript application use the [web3.js](https://github.com/ethereum/web3.js) library, which gives a convenient interface for the RPC methods.
+FUSION's extended JavaScript API, See the [JavaScript API](https://fusionapi.readthedocs.io/) for more.
 
 ## JSON-RPC Endpoint
 
@@ -22,7 +26,7 @@ Default JSON-RPC endpoints:
 
 | Client | URL |
 |-------|:------------:|
-| Go |http://localhost:32659 |
+| Go |http://localhost:9000 |
 
 
 You can start the HTTP JSON-RPC with the `--rpc` flag
@@ -30,7 +34,7 @@ You can start the HTTP JSON-RPC with the `--rpc` flag
 efsn --rpc
 ```
 
-change the default port (32659) and listing address (localhost) with:
+change the default port (9000) and listing address (localhost) with:
 
 ```bash
 efsn --rpc --rpcaddr <ip> --rpcport <portnumber>
@@ -39,7 +43,7 @@ efsn --rpc --rpcaddr <ip> --rpcport <portnumber>
 If accessing the RPC from a browser, CORS will need to be enabled with the appropriate domain set. Otherwise, JavaScript calls are limit by the same-origin policy and requests will fail:
 
 ```bash
-efsn --rpc --rpccorsdomain "http://localhost:8545"
+efsn --rpc --rpccorsdomain "http://localhost:9000"
 ```
 
 The JSON RPC can also be started from the efsn console using the `admin.startRPC(addr, port)` command.
@@ -48,7 +52,7 @@ The JSON RPC can also be started from the efsn console using the `admin.startRPC
 
 The curl options below might return a response where the node complains about the content type, this is because the --data option sets the content type to application/x-www-form-urlencoded . If your node does complain, manually set the header by placing -H "Content-Type: application/json" at the start of the call.
 
-The examples also do not include the URL/IP & port combination which must be the last argument given to curl e.x. 127.0.0.1:32659
+The examples also do not include the URL/IP & port combination which must be the last argument given to curl e.x. 127.0.0.1:9000
 
 ## JSON-RPC methods
 
