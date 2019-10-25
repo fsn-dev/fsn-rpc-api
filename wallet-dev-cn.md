@@ -10,13 +10,15 @@ FSN节点支持两种部署方法：
 
 ### 1. docker一键部署
 
+在Linux系统中运行命令：
+
 `bash -c "$(curl -fsSL https://raw.githubusercontent.com/FUSIONFoundation/efsn/master/QuickNodeSetup/fsnNode.sh)"`
 
 部署过程中如果选择挖矿节点需要输入keystore文件和password，详细请参考：https://fusionnetworks.zendesk.com/hc/en-us/categories/360001967614-Staking-On-Fusion-MainNet
 
 ### 2. 源码编译部署
 
-1. 同步代码后`make efsn`编译部署
+1. 同步代码
 
 `git clone https://github.com/FUSIONFoundation/efsn.git`
 
@@ -34,13 +36,28 @@ FSN节点支持两种部署方法：
 
 测试网运行请添加`--testnet`参数。
 
-作为同步节点能够查询所有历史数据需要打开`--gcmode=archive`参数，在770000块高度是占用硬盘空间超过100G，采用此模式需要提前准备服务器存储空间（建议>300G）。非archive模式1G左右，但无法查询一些历史数据。
+作为同步节点能够查询所有历史数据需要打开`--gcmode=archive`参数，在770000块高度时占用硬盘空间超过100G，采用此模式需要提前准备服务器存储空间（建议>300G）。非archive模式1G左右，但无法查询一些历史数据。
 
 ## 接口开发
 
-### 查询余额
+FSN节点代码fork于[go-ethereum](https://github.com/ethereum/go-ethereum)，RPC接口与ETH兼容，上层应用接口与[web3.js](https://github.com/ethereum/web3.js)兼容。FSN的Ticket, Asset, Timelock, USAN, Swap, Staking等功能提供[RPC扩展接口](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API)和[web3扩展接口](https://github.com/FUSIONFoundation/web3-fusion-extend)。
 
 ### 充值识别
 
+FSN网络支持两种转账交易类型：
+
+- 默认采用[sendAsset](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API#fsntx_sendAsset)
+
+- 兼容eth的[sendtransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
+
+这两种交易类型都可以充值。
+
+对于转账至充值地址的交易,可以通过监控最新区块[getblockbynumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)，获取块里的所有交易列表，然后遍历交易列表确认是否to地址为充值地址[getTransactionByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)，一致则为充值交易。
+
+充值入账块确认数量建议大于30个。
+
 ### 提现交易
 
+
+
+交易签名时，FSN主网chainid=32659 测试网chainid=3
