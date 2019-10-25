@@ -5,7 +5,9 @@
 ## 部署FSN节点
 
 FSN节点支持两种部署方法：
+
 1、docker镜像一键部署，镜像地址：https://hub.docker.com/u/fusionnetwork
+
 2、源码编译部署
 
 ### 1. docker一键部署
@@ -51,16 +53,14 @@ FSN网络支持两种转账交易类型，这两种交易类型都可以充值�
 - 兼容eth的[sendtransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
 
 
-对于转账至充值地址的交易,可以通过监控最新区块来识别。获取区块里的所有交易列表，然后遍历交易列表识别to地址是否为充值地址，一致则为充值交易。
+兼容eth的sendtransaction转账交易可以采用和以太坊一样的充值识别代码。一般是通过监控最新区块，获取区块里的所有交易列表，然后遍历交易列表识别to地址是否为充值地址，是则为充值交易。
 
-兼容eth的sendtransaction转账交易可以采用和以太坊充值一样的充值识别代码。
-
-默认采用sendAsset的转账交易需要增加一段代码来识别充值。区别在于此类交易的真实to地址和转账金额需要从交易的receipt的data参数中解析后获取。
+默认采用的sendAsset转账交易类似erc20智能合约转账交易，需要增加一段代码来识别充值。区别在于此类交易的实际to地址和转账金额需要从交易的receipt的data参数中解析后获取。解析实际to地址和转账金额可以采用[getTransactionAndReceipt](https://github.com/FUSIONFoundation/efsn/wiki/FSN-RPC-API#fsn_getTransactionAndReceipt)接口。
 
 充值入账块确认数量建议大于30个。
 
 ### 提现交易
 
-
+发送提现交易可以采用和以太坊兼容的提现代码。交易离线签名后通过[sendrawtransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)接口发送至FSN节点RPC接口。
 
 交易签名时，FSN主网chainid=32659 测试网chainid=3
