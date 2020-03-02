@@ -64,9 +64,11 @@ The examples also do not include the URL/IP & port combination which must be the
 * [fsn_allTicketsByAddress](#fsn_allTicketsByAddress)
 * [fsn_totalNumberOfTickets](#fsn_totalNumberOfTickets)
 * [fsn_totalNumberOfTicketsByAddress](#fsn_totalNumberOfTicketsByAddress)
+* [fsntx_sendTimeLock](#fsntx_sendTimeLock)
 * [fsntx_assetToTimeLock](#fsntx_assetToTimeLock)
 * [fsntx_timeLockToTimeLock](#fsntx_timeLockToTimeLock)
 * [fsntx_timeLockToAsset](#fsntx_timeLockToAsset)
+* [fsn_getTimeLockValueByInterval](#fsn_getTimeLockValueByInterval)
 * [fsn_getTimeLockBalance](#fsn_getTimeLockBalance)
 * [fsn_getAllTimeLockBalances](#fsn_getAllTimeLockBalances)
 * [fsntx_genAsset](#fsntx_genAsset)
@@ -398,6 +400,60 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 ```
 
 ***
+#### fsntx_sendTimeLock
+
+Convert assets or timelock to timelock balance.(Account has been unlocked)
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value -  The value for sending.
+8. `String|HexNumber`, start - (optional) The start time of the time lock.
+9. `Number`, end - (optional) The end time of the time lock.
+
+
+```js
+1.params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1",
+  "to":"0x66272b2bc4f7bc74f81a40ee8f4259bcf93d638e",
+  "start":"0x5e4f5011", //2020/2/21 11:35:45
+  "end":"0x5e758b91", //2020/3/21 11:35:45
+  "value":"0x1BC16D674EC80000" //2,000,000,000,000,000,000
+}]
+2.params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1",
+  "toUSAN":104,
+  "start":"0x5e4f5011", //2020/2/21 11:35:45
+  "end":"0x5e758b91", //2020/3/21 11:35:45
+  "value":"0x1BC16D674EC80000" //2,000,000,000,000,000,000
+}]
+```
+
+##### Return
+
+`DATA`, 32 Bytes - The transaction hash.
+
+##### Example
+```js
+// Request
+1.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1","to":"0x66272b2bc4f7bc74f81a40ee8f4259bcf93d638e","start":"0x5e4f5011","end":"0x5e758b91","value":"0x1BC16D674EC80000"}],"id":1}'
+
+2.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendTimeLock","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1","toUSAN":104,"start":"0x5e4f5011","end":"0x5e758b91","value":"0x1BC16D674EC80000"}],"id":1}'
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":"0xd3c4777df1e1ec47586c1ec16952dcdcc328f4a27808793824a7041a1a2035d6"
+}
+
+```
 
 #### fsntx_assetToTimeLock
 
@@ -567,6 +623,49 @@ Convert timelock balance to asset.(Account has been unlocked)
   "jsonrpc":"2.0",
   "id":1,
   "result":"0xb8242235c1f4fa1bcbc22b65bdfd2ab19db97cdfdc3b804fa302f87eafcd69c2"
+}
+```
+
+***
+
+#### fsn_getTimeLockValueByInterval
+
+Return transfer amount within specified time.
+
+
+##### Parameters
+
+1. `String|Hash`, assetID - The hash of the asset.
+2. `String|Address`, address - The address for the account.
+3. `String|HexNumber`, start - (optional) The start time of the time lock.
+4. `String|HexNumber`, end - (optional) The end time of the time lock.
+5. `String|HexNumber|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`.
+
+
+```js
+params: [{
+  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1",
+  0,          // start time
+  0,         // end time
+  "latest"  // state at the latest block
+  }]
+```
+
+##### Return
+
+`DATA`, The transfer amount within specified time.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsn_getTimeLockValueByInterval","params":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1",0,0,"latest"],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":"6000000000000000000"
 }
 ```
 
