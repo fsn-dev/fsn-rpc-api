@@ -60,36 +60,51 @@ The examples also do not include the URL/IP & port combination which must be the
 * [fsn_getStakeInfo](#fsn_getStakeInfo)
 * [fsn_getBlockReward](#fsn_getBlockReward)
 * [fsntx_buyTicket](#fsntx_buyTicket)
+* [fsntx_buildBuyTicketTx](#fsntx_buildBuyTicketTx)
 * [fsn_allTickets](#fsn_allTickets)
 * [fsn_allTicketsByAddress](#fsn_allTicketsByAddress)
 * [fsn_totalNumberOfTickets](#fsn_totalNumberOfTickets)
 * [fsn_totalNumberOfTicketsByAddress](#fsn_totalNumberOfTicketsByAddress)
 * [fsntx_sendTimeLock](#fsntx_sendTimeLock)
 * [fsntx_assetToTimeLock](#fsntx_assetToTimeLock)
+* [fsntx_buildAssetToTimeLockTx](#fsntx_buildAssetToTimeLockTx)
 * [fsntx_timeLockToTimeLock](#fsntx_timeLockToTimeLock)
+* [fsntx_buildTimeLockToTimeLockTx](#fsntx_buildTimeLockToTimeLockTx)
 * [fsntx_timeLockToAsset](#fsntx_timeLockToAsset)
+* [fsntx_buildTimeLockToAssetTx](#fsntx_buildTimeLockToAssetTx)
 * [fsn_getTimeLockValueByInterval](#fsn_getTimeLockValueByInterval)
 * [fsn_getTimeLockBalance](#fsn_getTimeLockBalance)
 * [fsn_getAllTimeLockBalances](#fsn_getAllTimeLockBalances)
 * [fsntx_genAsset](#fsntx_genAsset)
+* [fsntx_buildGenAssetTx](#fsntx_buildGenAssetTx)
 * [fsntx_decAsset](#fsntx_decAsset)
+* [fsntx_buildDecAssetTx](#fsntx_buildDecAssetTx)
 * [fsntx_incAsset](#fsntx_incAsset)
+* [fsntx_buildIncAssetTx](#fsntx_buildIncAssetTx)
 * [fsntx_sendAsset](#fsntx_sendAsset)
+* [fsntx_buildSendAssetTx](#fsntx_buildSendAssetTx)
 * [fsn_getAllBalances](#fsn_getAllBalances)
 * [fsn_getLatestNotation](#fsn_getLatestNotation)
 * [fsntx_genNotation](#fsntx_genNotation)
+* [fsntx_buildGenNotationTx](#fsntx_buildGenNotationTx)
 * [fsn_getNotation](#fsn_getNotation)
 * [fsn_getAddressByNotation](#fsn_getAddressByNotation)
 * [fsn_getAsset](#fsn_getAsset)
 * [fsn_getBalance](#fsn_getBalance)
 * [fsntx_makeSwap](#fsntx_makeSwap)
+* [fsntx_buildMakeSwapTx](#fsntx_buildMakeSwapTx)
 * [fsn_getSwap](#fsn_getSwap)
 * [fsntx_takeSwap](#fsntx_takeSwap)
+* [fsntx_buildTakeSwapTx](#fsntx_buildTakeSwapTx)
 * [fsntx_recallSwap](#fsntx_recallSwap)
+* [fsntx_buildRecallSwapTx](#fsntx_buildRecallSwapTx)
 * [fsntx_makeMultiSwap](#fsntx_makeMultiSwap)
+* [fsntx_buildMakeMultiSwapTx](#fsntx_buildMakeMultiSwapTx)
 * [fsn_getMultiSwap](#fsn_getMultiSwap)
 * [fsntx_takeMultiSwap](#fsntx_takeMultiSwap)
+* [fsntx_buildTakeMultiSwapTx](#fsntx_buildTakeMultiSwapTx)
 * [fsntx_recallMultiSwap](#fsntx_recallMultiSwap)
+* [fsntx_buildRecallMultiSwapTx](#fsntx_buildRecallMultiSwapTx)  ===
 * [fsntx_isAutoBuyTicket](#fsntx_isAutoBuyTicket)
 * [miner_startAutoBuyTicket](#miner_startAutoBuyTicket)
 * [miner_stopAutoBuyTicket](#miner_stopAutoBuyTicket)
@@ -232,6 +247,48 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "jsonrpc":"2.0",
   "id":1,
   "result":"0x7bee2c9931da61d53da0cfbbc35b7614dd0283959f2e6023dc7792baeafe97f5"
+}
+
+```
+***
+
+#### fsntx_buildBuyTicketTx
+
+Build buyTicket unsigned raw transaction.   
+
+##### Parameters
+
+`DATA`, from - The address for the account.
+
+```js
+params: [{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac"}]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildBuyTicketTx","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x0",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xcd048bca845ee88333845f101033",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0xe73510d1333c4eea413325cfb0774de7e27dbf5417f1bbc52aab45c9614e850a"
+    }
 }
 
 ```
@@ -509,6 +566,72 @@ Convert assets to timelock balance.(Account has been unlocked)
 }
 
 ```
+***
+#### fsntx_buildAssetToTimeLockTx
+
+Build assetToTimeLock unsigned raw transaction.  
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value -  The value for sending.
+8. `String|HexNumber`, start - (optional) The start time of the time lock.
+9. `Number`, end - (optional) The end time of the time lock.
+
+
+```js
+1.params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "start":"0x5ee884db", //2020/6/16 16:37:32
+  "end":"0x5f1011cc", //2020/7/16 16:37:32
+  "value":"0x1BC16D674EC80000" //2,000,000,000,000,000,000
+}]
+2.params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "toUSAN":104,
+  "start":"0x5ee884db", //2020/6/16 16:37:32
+  "end":"0x5f1011cc", //2020/7/16 16:37:32
+  "value":"0x1BC16D674EC80000" //2,000,000,000,000,000,000
+}]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+1.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildAssetToTimeLockTx","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","start":"0x5ee884db","end":"0x5f1011cc","value":"0x1BC16D674EC80000"}],"id":1}'
+
+2.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildAssetToTimeLockTx","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","toUSAN":104,"start":"0x5ee884db","end":"0x5f1011cc","value":"0x1BC16D674EC80000"}],"id":1}'
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x0",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf84f03b84cf84a80a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff94cc9ea1c564fa513d6abd9339587dc4f886d7acc4845ee884db845f1011cc881bc16d674ec80000",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x169f3ee737cc46f3ba020e9311b9e91ff9d46beb47bdb2d605e7601d97b9d545"
+    }
+}
+
+```
 
 ***
 
@@ -567,6 +690,73 @@ Send a time locked asset to another account.(Account has been unlocked)
   "result":"0x7ca4fa378a8ece6f2db1fe41521c80edcda45fff270b0bc12c81ab269c651d27"
 }
 ```
+***
+
+#### fsntx_buildTimeLockToTimeLockTx
+
+Build timeLockToTimeLock unsigned raw transaction.
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value -  The value for sending.
+8. `String|HexNumber`, start -  The start time of the time lock.
+9. `String|HexNumber`, end - The end time of the time lock.
+
+
+```js
+1. params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "to":"0x07718f21f889b84451727ada8c65952a597b2e78",
+  "start":"0x5ee884db", //2020/6/16 16:37:32
+  "end":"0x5f1011cc", //2020/7/16 16:37:32
+  "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
+  }]
+
+2. params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "toUSAN":104,
+  "start":"0x5ee884db", //2020/6/16 16:37:32
+  "end":"0x5f1011cc", //2020/7/16 16:37:32
+  "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+1. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildTimeLockToTimeLockTx","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","to":"0x07718f21f889b84451727ada8c65952a597b2e78","start":"0x5ee884db","end":"0x5f1011cc","value":"0x1BC16D674EC80000"}],"id":1}'
+
+2. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildTimeLockToTimeLockTx","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":104,"start":"0x5ee884db","end":"0x5f1011cc","value":"0x1BC16D674EC80000"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x0",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf84f03b84cf84a01a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9407718f21f889b84451727ada8c65952a597b2e78845ee884db845f1011cc881bc16d674ec80000",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0xc27d2840674a0f6eae2b393668ce96adc143047f1f3f39e9dbb19498c94689d7"
+    }
+}
+```
 
 ***
 
@@ -623,6 +813,73 @@ Convert timelock balance to asset.(Account has been unlocked)
   "jsonrpc":"2.0",
   "id":1,
   "result":"0xb8242235c1f4fa1bcbc22b65bdfd2ab19db97cdfdc3b804fa302f87eafcd69c2"
+}
+```
+***
+#### fsntx_buildTimeLockToAssetTx
+
+Build timeLockToAsset unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset -  The hash of the asset.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value -  The value for sending.
+8. `String|HexNumber`, start - (optional) The start time of the time lock.
+9. `String|HexNumber`, end - (optional) The end time of the time lock.
+
+```js
+1. params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "to":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
+  "start":"0x5ee884db", //2020/6/16 16:37:32
+  "end":"0x5f1011cc", //2020/7/16 16:37:32
+  "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
+  }]
+
+2. params: [{
+  "asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "toUSAN":104,
+  "start":"0x5ee884db", //2020/6/16 16:37:32
+  "end":"0x5f1011cc", //2020/7/16 16:37:32
+  "value":"0x1BC16D674EC80000"  //2,000,000,000,000,000,000‬
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+1.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildTimeLockToAssetTx","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","start":"0x5ee884db","end":"0x5f1011cc","value":"0x1BC16D674EC80000"}],"id":1}'
+
+2.curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildTimeLockToAssetTx","params":[{"asset":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","toUSAN":104,"start":"0x5ee884db","end":"0x5f1011cc","value":"0x1BC16D674EC80000"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x0",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf85303b850f84e02a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff94cc9ea1c564fa513d6abd9339587dc4f886d7acc4845ee88d1a88ffffffffffffffff881bc16d674ec80000",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0xfe26e01c9f17a0c6c6b037c8872c61a398abb324fca4bf4387c55f63e63b468b"
+    }
 }
 ```
 
@@ -809,6 +1066,63 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
 }
 
 ```
+***
+
+#### fsntx_buildGenAssetTx
+
+Build genAsset unsigned raw transaction.
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String`, name - The name for the asset.
+6. `String`, symbol -  The symbol for the asset.
+7. `Number`, decimals -  The decimals for the asset.
+8. `String|BigNumber`, total -  The total value for the asset.
+9. `bool`, canChange -  Values can be changed.  
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "name":"FusionTest",
+  "symbol":"FT",
+  "decimals":1,
+  "total":"0x200",
+  "canChange":true
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildGenAssetTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","name":"FusionTest","symbol":"FT","decimals":1,"total":"0x200","canChange":true}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x0",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xd70195d48a467573696f6e54657374824654018202000180",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"
+    }
+}
+
+```
 
 ***
 
@@ -851,6 +1165,60 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "jsonrpc":"2.0",
   "id":1,
   "result":"0x85d95f61676e99046053346419129afec9d7a8fee2924d9062419aee253f17a4"
+}
+```
+***
+
+#### fsntx_buildDecAssetTx
+
+Build decAsset unsigned raw transaction.
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset - The hash of the asset.
+6. `String|Address`, to - The address for the receiving account.
+7. `String|BigNumber`, value - The value of decrease.
+8. `String`, transacData - (optional) The data for transaction.
+
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "value":"0x10",
+  "asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildDecAssetTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","value":"0x10","asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x1",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf83e0cb83bf839a04473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b94cc9ea1c564fa513d6abd9339587dc4f886d7acc4108080",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x9798a2295357a31484948f6cbbd47f0fbfd82f6de79480383af747d75039356f"
+    }
 }
 ```
 
@@ -898,6 +1266,61 @@ params: [{
   "result":"0xdb48fa3fdad4ad6c85b3700d89c37e776cb4fe61487425c752b863c25fe8a7d8"
 }
 ```
+***
+
+#### fsntx_buildIncAssetTx
+
+Build incAsset unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset - The hash of the asset.
+6. `String|Address`, to - The address for the receiving account.
+7. `String|BigNumber`, value - The value of increase.
+8. `String`, transacData - (optional) The data for transaction.
+
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "value":"0x10",
+  "asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildIncAssetTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","to":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","value":"0x10","asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x1",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf83e0cb83bf839a04473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b94cc9ea1c564fa513d6abd9339587dc4f886d7acc4100180",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x1caa8be9419ba4e9a8ddf7d262af46fbbc11d879b94356f11f807a4d4d291db1"
+    }
+}
+```
 
 ***
 
@@ -925,7 +1348,7 @@ Send assets to other accounts.(Account has been unlocked)
   }]
 2. params:[{
   "from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac",
-  "toUSAN":"207",
+  "toUSAN":104,
   "value":"0x10",
   "asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"
 }]
@@ -940,13 +1363,74 @@ Send assets to other accounts.(Account has been unlocked)
 ```js
 // Request
 1. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendAsset","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","to":"0x07718f21f889b84451727ada8c65952a597b2e78","value":"0x10","asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"}],"id":1}'
-2. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendAsset","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":"207","value":"0x10","asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"}],"id":1}'
+2. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_sendAsset","params":[{"from":"0x5b15a29274c74cd7cae59cabf656873a0ea706ac","toUSAN":104,"value":"0x10","asset":"0x530566afdbc2e3e4192fb561a1032fba189571bd65abb823e0b0d0ae023dfbbd"}],"id":1}'
 
 // Result
 {
   "jsonrpc":"2.0",
   "id":1,
   "result":"0xbb9651c88974a0f79cde02e763f7999f0da36df751719934b40d04814b0640af"
+}
+```
+***
+
+#### fsntx_buildSendAssetTx
+
+Build sendAsset unsigned raw transaction.
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas -  (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce -  (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, asset - The hash of the asset.
+6. `String|Address|Number`, to|toUSAN - The address for the receiving account | The notation of receiving account address.
+7. `String|BigNumber`, value - The value for sending.
+
+
+```js
+1. params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "to":"0x07718f21f889b84451727ada8c65952a597b2e78",
+  "value":"0x10",
+  "asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"
+  }]
+2. params:[{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "toUSAN":"104",
+  "value":"0x10",
+  "asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"
+}]
+
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+##### Example
+```js
+// Request
+1. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildSendAssetTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","to":"0x07718f21f889b84451727ada8c65952a597b2e78","value":"0x10","asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"}],"id":1}'
+2. curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildSendAssetTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","toUSAN":104,"value":"0x10","asset":"0x4473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x1",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf83b02b838f7a04473c9c46aa575aca6665e0b485c5bb85eee55cb6161a002140c4829066f459b9407718f21f889b84451727ada8c65952a597b2e7810",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x8826547721392cd3b9f1accb3c739e42a57e531c227346df598bd2424457a1b2"
+    }
 }
 ```
 
@@ -1056,6 +1540,52 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "jsonrpc":"2.0",
   "id":1,
   "result":"0xae4b4949f9e2ad46343df4e11d5a245306281b60cb6d217dd10c011d18638445"
+}
+```
+***
+#### fsntx_buildGenNotationTx
+
+Build genNotation unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number` gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number` nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+
+
+```js
+params: [{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4"}]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildGenNotationTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x1",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xc28080",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0xcfbe0320045fa877f9076e54bc1f7d64f0c85d2a6d20a36ba96059f4afe232b5"
+    }
 }
 ```
 
@@ -1277,6 +1807,74 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "result":"0xfbd0eb501114d23aa42d92be50d705a3e987bda658772a92283e1483fcc6027a"
 }
 ```
+***
+#### fsntx_buildMakeSwapTx
+
+Build makeSwap unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice- (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Number`, FromAssetID - The assetID of the from account.
+6. `String|HexNumber`, FromStartTime - (optional) The start time of the sending account.
+7. `String|HexNumber`, FromEndTime - (optional) The end time of the sending account.
+8. `String|BigNumber`, MinFromAmount - The amonut of the sending account.
+9. `String|Number`,  ToAssetID - The assetID of the to account.
+10. `String|HexNumber`,  ToStartTime - (optional) The start time of the receiving account.
+11. `String|HexNumber`, ToEndTime - (optional) The end time of the receiving account..
+12. `String|BigNumber`, MinToAmount - The amonut of the receiving account.
+13. `Number`, SwapSize - The size of swap.
+14. `Array String|Address`, Targes - Only these addresses can be exchanged.
+
+
+```js
+params: [
+   {
+    "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+    "FromAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", //If FromAssetID is "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe",it means make a Notation swap
+    "ToAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "MinToAmount":"0x1BC16D674EC80000",    //2000000000000000000
+    "MinFromAmount":"0x29A2241AF62C0000",  //3000000000000000000
+    "FromStartTime":"0x5ee884db",          //2019/9/2 18:1:10
+    "FromEndTime":"0x5f1011cc",            //2019/10/2 18:2:33
+    "SwapSize":2,
+    "Targes":["0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1"]
+  }
+]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildMakeSwapTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","FromAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","ToAssetID":"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","MinToAmount":"0x1BC16D674EC80000","MinFromAmount":"0x29A2241AF62C0000","FromStartTime":"0x5ee884db","FromEndTime":"0x5f1011cc","SwapSize":2,"Targes":["0xd1c675d3fc4c19d71b50bfe056a09627ca7e85a1"]}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x1",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf88a0ab887f885a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff845ee884db845f1011cc8829a2241af62c0000a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8088ffffffffffffffff881bc16d674ec8000002d594d1c675d3fc4c19d71b50bfe056a09627ca7e85a1845ee8943680",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x1184284f0a299efbb8e4c99d24b629039a4aff041b790d5f3ef756ee55c0246c"
+    }
+}
+```
 
 ***
 
@@ -1375,6 +1973,59 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "result":"0x61923c6b6c5bf635130b5f2d093754a70fc7a9986cc2acc8c4fcfc87a580c25d"
 }
 ```
+***
+
+#### fsntx_buildTakeSwapTx
+
+Build takeSwap unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, SwapID - The hash of the swap.
+6. `Number`, Size - The size of swap.
+
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "SwapID":"0x5aac73c44f6bd8a0908a283c553bccd35e70452ea176b5001a0401bd943ef334",
+  "Size":1
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildTakeSwapTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","SwapID":"0x5aac73c44f6bd8a0908a283c553bccd35e70452ea176b5001a0401bd943ef334","Size":1}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x2",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xe50ba3e2a05aac73c44f6bd8a0908a283c553bccd35e70452ea176b5001a0401bd943ef33401",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x857cc1bc6b23ec12420e17848a50d4395c1fcaeed6ff98298f85f475d9a82062"
+    }
+}
+```
 
 ***
 
@@ -1413,6 +2064,55 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "jsonrpc":"2.0",
   "id":1,
   "result":"0x4270a81d7377fffb7e4aa4785f729baab5ca6711b9ae6df8777916a6f036285d"
+}
+```
+***
+#### fsntx_buildRecallSwapTx
+
+Build recallSwap unsigned raw transaction.
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, SwapID - The hash of the swap.
+
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "SwapID":"0x5aac73c44f6bd8a0908a283c553bccd35e70452ea176b5001a0401bd943ef334"
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildRecallSwapTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","SwapID":"0x5aac73c44f6bd8a0908a283c553bccd35e70452ea176b5001a0401bd943ef334"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x2",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xe407a2e1a05aac73c44f6bd8a0908a283c553bccd35e70452ea176b5001a0401bd943ef334",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x25fe3ca136e91ba0448f775e36360348a4f09cf176afca8ffab2209515003e31"
+    }
 }
 ```
 
@@ -1475,6 +2175,78 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "jsonrpc":"2.0",
   "id":1,
   "result":"0x89e699deac578e491675f1e4fe2233966e79fd388f9725035479268605801c87"
+}
+```
+***
+#### fsntx_buildMakeMultiSwapTx
+
+Build makeMultiSwap unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Number`, FromAssetID - The assetID of the from account.
+6. `String|HexNumber`, FromStartTime - (optional) The start time of the sending account.
+7. `String|HexNumber`, FromEndTime - (optional) The end time of the sending account.
+8. `String|BigNumber`, MinFromAmount - The amonut of the sending account.
+9. `String|Number`,  ToAssetID - The assetID of the to account.
+10. `String|HexNumber`,  ToStartTime - (optional) The start time of the receiving account.
+11. `String|HexNumber`, ToEndTime - (optional) The end time of the receiving account..
+12. `String|BigNumber`, MinToAmount - The amonut of the receiving account.
+13. `Number`, SwapSize - The size of swap.
+14. `Array String|Address`, Targes - Only these addresses can be exchanged.
+
+
+```js
+params: [
+  {
+    "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+    "FromAssetID":[
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],
+      "ToAssetID":[
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],
+      "MinToAmount":["0x1BC16D674EC80000","0x1BC16D674EC80000"],
+      "MinFromAmount":["0x29A2241AF62C0000","0x29A2241AF62C0000"],
+      "FromStartTime":["0x5ee884db","0x5ee884db"],
+      "FromEndTime":["0x5f1011cc","0x5f1011ff"],
+      "SwapSize":2,
+      "Targes":[]
+  }
+]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildMakeMultiSwapTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","FromAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"ToAssetID":["0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"],"MinToAmount":["0x1BC16D674EC80000","0x1BC16D674EC80000"],"MinFromAmount":["0x29A2241AF62C0000","0x29A2241AF62C0000"],"FromStartTime":["0x5ee884db","0x5ee884db"],"FromEndTime":["0x5f1011cc","0x5f1011ff"],"SwapSize":2,"Targes":[]}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x2",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xf8e70db8e4f8e2f842a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffca845ee884db845ee884dbca845f1011cc845f1011ffd28829a2241af62c00008829a2241af62c0000f842a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc28080d288ffffffffffffffff88ffffffffffffffffd2881bc16d674ec80000881bc16d674ec8000002c0845ee8970e80",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0xe3070d1240181df70ae3665cbfe00b743529aa24e1c5faa04be3da898ad97452"
+    }
 }
 ```
 
@@ -1597,10 +2369,62 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "result":"0x75ebbd003ae590e1df879ebc931d34c6c494f9479b828017baecf60b44e2c59c"
 }
 ```
+***
+#### fsntx_buildTakeMultiSwapTx
+
+Build takeMultiSwap unsigned raw transaction.
+
+
+##### Parameters
+
+1. `String|Address`, from - The address for the sending account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Hash`, SwapID - The hash of the multi swap.
+6. `Number`, Size - The size of multi swap.
+
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "SwapID":"0x18f7b73f2321acafcfb3aec2c24a4bfcb6af59f8a0137a565af5fe378bb6f1f5",
+  "Size":1
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildTakeMultiSwapTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","SwapID":"0x18f7b73f2321acafcfb3aec2c24a4bfcb6af59f8a0137a565af5fe378bb6f1f5","Size":1}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x3",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xe50fa3e2a018f7b73f2321acafcfb3aec2c24a4bfcb6af59f8a0137a565af5fe378bb6f1f501",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x21fb72ada22013431bd42bfc610330074f9352a5999528a78fac748cec5c2e99"
+    }
+}
+```
 
 ***
 
-#### fsn_recallMultiSwap
+#### fsntx_recallMultiSwap
 
 Destroy multi swap order and Return Assets.(Account has been unlocked)
 
@@ -1667,6 +2491,55 @@ curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method
   "result":true
 }
 
+```
+***
+#### fsntx_buildRecallMultiSwapTx
+
+Build recallMultiSwap unsigned raw transaction.
+
+##### Parameters
+
+1. `String|Address`, from - The address for the account.
+2. `Number`, gas - (optional, default: To-Be-Determined) The amount of gas to use for the transaction (unused gas is refunded).
+3. `String|BigNumber`, gasPrice - (optional) The price of gas for this transaction in wei.
+4. `Number`, nonce - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+5. `String|Number`, SwapID - The hash of multi swap.
+
+
+```js
+params: [{
+  "from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4",
+  "SwapID":"0x18f7b73f2321acafcfb3aec2c24a4bfcb6af59f8a0137a565af5fe378bb6f1f5"
+  }]
+```
+
+##### Return
+
+`DATA`,  unsigned raw transaction.
+
+
+##### Example
+```js
+// Request
+curl -X POST -H "Content-Type":application/json --data '{"jsonrpc":"2.0","method":"fsntx_buildRecallMultiSwapTx","params":[{"from":"0xcc9ea1c564fa513d6abd9339587dc4f886d7acc4","SwapID":"0x18f7b73f2321acafcfb3aec2c24a4bfcb6af59f8a0137a565af5fe378bb6f1f5"}],"id":1}'
+
+// Result
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "result":{
+    "nonce":"0x3",
+    "gasPrice":"0x3b9aca00",
+    "gas":"0x15f90",
+    "to":"0xffffffffffffffffffffffffffffffffffffffff",
+    "value":"0x0",
+    "input":"0xe40ea2e1a018f7b73f2321acafcfb3aec2c24a4bfcb6af59f8a0137a565af5fe378bb6f1f5",
+    "v":"0x0",
+    "r":"0x0",
+    "s":"0x0",
+    "hash":"0x9822e3274a33296084e2699509fcc7738a51a219129afc08b355c8020da4c80e"
+    }
+}
 ```
 
 ***
