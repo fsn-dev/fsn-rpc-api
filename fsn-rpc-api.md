@@ -104,7 +104,7 @@ The examples also do not include the URL/IP & port combination which must be the
 * [fsntx_takeMultiSwap](#fsntx_takeMultiSwap)
 * [fsntx_buildTakeMultiSwapTx](#fsntx_buildTakeMultiSwapTx)
 * [fsntx_recallMultiSwap](#fsntx_recallMultiSwap)
-* [fsntx_buildRecallMultiSwapTx](#fsntx_buildRecallMultiSwapTx)  ===
+* [fsntx_buildRecallMultiSwapTx](#fsntx_buildRecallMultiSwapTx)
 * [fsntx_isAutoBuyTicket](#fsntx_isAutoBuyTicket)
 * [miner_startAutoBuyTicket](#miner_startAutoBuyTicket)
 * [miner_stopAutoBuyTicket](#miner_stopAutoBuyTicket)
