@@ -8,7 +8,7 @@ Block explorer: https://blocks.fusionnetwork.io/
 
 Node Monitor: https://node.fusionnetwork.io/
 
-Testnet faucet: https://https://fsn.dev/faucet/
+Testnet faucet: https://fsn.dev/faucet/
 
 ## Code
 
@@ -20,7 +20,7 @@ FSN JS SDK: https://github.com/FUSIONFoundation/web3-fusion-extend
 
 White/Yellow paper: https://github.com/FUSIONFoundation/Documentation
 
-Run FSN node: https://fusionnetworks.zendesk.com/hc/en-us/categories/360001967614-Staking-On-Fusion-MainNet
+Run FSN node: https://hyperionxxx.medium.com/fusion-node-setup-guide-32ca1241a0e9
 
 JavaScript API Doc: https://fusionapi.readthedocs.io/
 
